@@ -1,8 +1,7 @@
 const Kyuzan721Token = artifacts.require('Kyuzan721Token')
 
 module.exports = async (callback) => {
-    // let account = web3.eth.accounts[0]
-    let account = '0xF9D077aCcDcCf8Bb7b107F7E319a249BE592fBeC'
+    let account = web3.eth.accounts[0] // if this doesn't work, write your address directly here
     let members = [
         {to: account, tokenId: 1, name: 'takumi', company: 'kyuzan'},
         {to: account, tokenId: 2, name: 'komy', company: 'kyuzan'},
