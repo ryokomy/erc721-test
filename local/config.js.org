@@ -1,0 +1,4 @@
+module.exports = {
+    mnemonic: 'replace this with your mnemonic phrase',
+    infura_access_token: 'replace this with your infura access token'
+}

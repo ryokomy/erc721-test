@@ -1,1 +1,3 @@
 build/
+local/config.js
+node_modules/
