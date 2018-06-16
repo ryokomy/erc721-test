@@ -415,6 +415,10 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
         allTokens.push(Member(_tokenId, _name, _company));
         emit Transfer(address(0), _to, _tokenId);
     }
+    
+    function mint(address _to, uint256 _tokenId, string _name, string _company) public {
+        _mint(_to, _tokenId, _name, _company);
+    }
 
 
 
