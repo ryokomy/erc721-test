@@ -46,6 +46,15 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     *   bytes4(keccak256('tokenURI(uint256)'))
     */
 
+
+    // struct ***************************************************************************
+    struct Member {
+        uint256 id;
+        string name;
+        string company;
+    }
+
+
     // states **********************************************************************************
 
     // Token name
@@ -61,7 +70,7 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     mapping(uint256 => uint256) internal ownedTokensIndex;
 
     // Array with all token ids, used for enumeration
-    uint256[] internal allTokens;
+    Member[] internal allTokens;
 
     // Mapping from token id to position in the allTokens array
     mapping(uint256 => uint256) internal allTokensIndex;
@@ -353,7 +362,7 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     */
     function tokenByIndex(uint256 _index) public view returns (uint256) {
         require(_index < totalSupply());
-        return allTokens[_index];
+        return allTokens[_index].id;
     }
 
     /**
@@ -399,11 +408,11 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     * @param _to address the beneficiary that will own the minted token
     * @param _tokenId uint256 ID of the token to be minted by the msg.sender
     */
-    function _mint(address _to, uint256 _tokenId) internal {
+    function _mint(address _to, uint256 _tokenId, string _name, string _company) internal {
         require(_to != address(0));
         addTokenTo(_to, _tokenId);
         allTokensIndex[_tokenId] = allTokens.length;
-        allTokens.push(_tokenId);
+        allTokens.push(Member(_tokenId, _name, _company));
         emit Transfer(address(0), _to, _tokenId);
     }
 
@@ -427,14 +436,14 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
         // Reorg all tokens array
         uint256 tokenIndex = allTokensIndex[_tokenId];
         uint256 lastTokenIndex = allTokens.length.sub(1);
-        uint256 lastToken = allTokens[lastTokenIndex];
+        Member memory lastToken = allTokens[lastTokenIndex];
 
         allTokens[tokenIndex] = lastToken;
-        allTokens[lastTokenIndex] = 0;
+        allTokens[lastTokenIndex] = Member(0, "null", "null");
 
         allTokens.length--;
         allTokensIndex[_tokenId] = 0;
-        allTokensIndex[lastToken] = tokenIndex;
+        allTokensIndex[lastToken.id] = tokenIndex;
 
         emit Transfer(_owner, address(0), _tokenId);
     }
