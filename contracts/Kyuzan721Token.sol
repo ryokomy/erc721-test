@@ -6,7 +6,17 @@ import "../submodules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../submodules/openzeppelin-solidity/contracts/AddressUtils.sol";
 import "../submodules/openzeppelin-solidity/contracts/introspection/SupportsInterfaceWithLookup.sol";
 
-contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
+contract Kyuzan721 {
+    struct Member {
+        uint256 id;
+        string name;
+        string company;
+    }
+
+    function memberByIndex(uint256 _index) public view returns (uint256 id, string name, string company);
+}
+
+contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
 
     // InterfaceId ***************************************************************************
 
@@ -47,14 +57,6 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     */
 
 
-    // struct ***************************************************************************
-    struct Member {
-        uint256 id;
-        string name;
-        string company;
-    }
-
-
     // states **********************************************************************************
 
     // Token name
@@ -68,9 +70,6 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
 
     // Mapping from token ID to index of the owner tokens list
     mapping(uint256 => uint256) internal ownedTokensIndex;
-
-    // Array with all token ids, used for enumeration
-    Member[] internal allTokens;
 
     // Mapping from token id to position in the allTokens array
     mapping(uint256 => uint256) internal allTokensIndex;
@@ -98,6 +97,8 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     // Mapping from owner to operator approvals
     mapping (address => mapping (address => bool)) internal operatorApprovals;
 
+    // Array with all token ids, used for enumeration
+    Member[] internal allTokens;
 
 
     // modifier ****************************************************************************
@@ -366,6 +367,20 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
     }
 
     /**
+    * @dev Gets the Member at a given index of all the tokens in this contract
+    * Reverts if the index is greater or equal to the total number of tokens
+    * @param _index uint256 representing the index to be accessed of the tokens list
+    * @return Member token at the given index of the members list
+    */
+    function memberByIndex(uint256 _index) public view returns (uint256 memberId, string memberName, string memberCompany) {
+        require(_index < totalSupply());
+        Member memory member = allTokens[_index];
+        memberId = member.id;
+        memberName = member.name;
+        memberCompany = member.company;
+    }
+
+    /**
     * @dev Internal function to set the token URI for a given token
     * Reverts if the token ID does not exist
     * @param _tokenId uint256 ID of the token to set its URI
@@ -415,7 +430,7 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721 {
         allTokens.push(Member(_tokenId, _name, _company));
         emit Transfer(address(0), _to, _tokenId);
     }
-    
+
     function mint(address _to, uint256 _tokenId, string _name, string _company) public {
         _mint(_to, _tokenId, _name, _company);
     }
