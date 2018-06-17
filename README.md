@@ -16,3 +16,4 @@ truffle deploy --network rinkeby --reset
 truffle exec --network rinkeby tools/exec_mints.js
 truffle exec --network rinkeby tools/exec_views.js
 ```
+when minting, set json and image files on correct uri.
