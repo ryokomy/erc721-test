@@ -19,6 +19,7 @@ module.exports = async (callback) => {
         let spot = await instance.spotByIndex.call(i)
         let id = spot[0].toNumber()
         let name = spot[1]
-        console.log('id:', id, '   name:', name)
+        let uri = await instance.tokenURI.call(id)
+        console.log('id:', id, '   name:', name, '   uri:', uri)
     }
 };
