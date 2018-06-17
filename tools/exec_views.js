@@ -1,7 +1,7 @@
-const Kyuzan721Token = artifacts.require('Kyuzan721Token')
+const Tokyo721Token = artifacts.require('Tokyo721Token')
 
 module.exports = async (callback) => {
-    let instance = await Kyuzan721Token.deployed()
+    let instance = await Tokyo721Token.deployed()
 
     // name, symbol
     let name = await instance.name.call()
@@ -14,12 +14,11 @@ module.exports = async (callback) => {
     let totalSupply = _totalSupply.toNumber()
     console.log('totalSupply: ', totalSupply);
 
-    // members (tokens)
+    // spots (tokens)
     for (let i = 0; i < totalSupply; i++) {
-        let member = await instance.memberByIndex.call(i)
-        let id = member[0].toNumber()
-        let name = member[1]
-        let company = member[2]
-        console.log('id:', id, '   name:', name, '   company:', company)
+        let spot = await instance.spotByIndex.call(i)
+        let id = spot[0].toNumber()
+        let name = spot[1]
+        console.log('id:', id, '   name:', name)
     }
 };

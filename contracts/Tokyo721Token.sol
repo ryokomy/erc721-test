@@ -6,17 +6,16 @@ import "../submodules/openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "../submodules/openzeppelin-solidity/contracts/AddressUtils.sol";
 import "../submodules/openzeppelin-solidity/contracts/introspection/SupportsInterfaceWithLookup.sol";
 
-contract Kyuzan721 {
-    struct Member {
+contract Tokyo721 {
+    struct Spot {
         uint256 id;
         string name;
-        string company;
     }
 
-    function memberByIndex(uint256 _index) public view returns (uint256 id, string name, string company);
+    function spotByIndex(uint256 _index) public view returns (uint256 id, string name);
 }
 
-contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
+contract Tokyo721Token is SupportsInterfaceWithLookup, ERC721, Tokyo721 {
 
     // InterfaceId ***************************************************************************
 
@@ -98,7 +97,7 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
     mapping (address => mapping (address => bool)) internal operatorApprovals;
 
     // Array with all token ids, used for enumeration
-    Member[] internal allTokens;
+    Spot[] internal allTokens;
 
 
     // modifier ****************************************************************************
@@ -367,17 +366,16 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
     }
 
     /**
-    * @dev Gets the Member at a given index of all the tokens in this contract
+    * @dev Gets the Spot at a given index of all the tokens in this contract
     * Reverts if the index is greater or equal to the total number of tokens
     * @param _index uint256 representing the index to be accessed of the tokens list
-    * @return Member token at the given index of the members list
+    * @return Spot token at the given index of the spots list
     */
-    function memberByIndex(uint256 _index) public view returns (uint256 memberId, string memberName, string memberCompany) {
+    function spotByIndex(uint256 _index) public view returns (uint256 spotId, string spotName) {
         require(_index < totalSupply());
-        Member memory member = allTokens[_index];
-        memberId = member.id;
-        memberName = member.name;
-        memberCompany = member.company;
+        Spot memory spot = allTokens[_index];
+        spotId = spot.id;
+        spotName = spot.name;
     }
 
     /**
@@ -387,6 +385,11 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
     * @param _uri string URI to assign
     */
     function _setTokenURI(uint256 _tokenId, string _uri) internal {
+        require(exists(_tokenId));
+        tokenURIs[_tokenId] = _uri;
+    }
+
+    function setTokenURI(uint256 _tokenId, string _uri) public {
         require(exists(_tokenId));
         tokenURIs[_tokenId] = _uri;
     }
@@ -423,16 +426,21 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
     * @param _to address the beneficiary that will own the minted token
     * @param _tokenId uint256 ID of the token to be minted by the msg.sender
     */
-    function _mint(address _to, uint256 _tokenId, string _name, string _company) internal {
+    function _mint(address _to, uint256 _tokenId, string _name) internal {
         require(_to != address(0));
         addTokenTo(_to, _tokenId);
         allTokensIndex[_tokenId] = allTokens.length;
-        allTokens.push(Member(_tokenId, _name, _company));
+        allTokens.push(Spot(_tokenId, _name));
         emit Transfer(address(0), _to, _tokenId);
     }
 
-    function mint(address _to, uint256 _tokenId, string _name, string _company) public {
-        _mint(_to, _tokenId, _name, _company);
+    function mint(address _to, uint256 _tokenId, string _name) public {
+        _mint(_to, _tokenId, _name);
+    }
+
+    function mintWithURI(address _to, uint256 _tokenId, string _name, string _uri) public {
+        _mint(_to, _tokenId, _name);
+        _setTokenURI(_tokenId, _uri);
     }
 
 
@@ -455,10 +463,10 @@ contract Kyuzan721Token is SupportsInterfaceWithLookup, ERC721, Kyuzan721 {
         // Reorg all tokens array
         uint256 tokenIndex = allTokensIndex[_tokenId];
         uint256 lastTokenIndex = allTokens.length.sub(1);
-        Member memory lastToken = allTokens[lastTokenIndex];
+        Spot memory lastToken = allTokens[lastTokenIndex];
 
         allTokens[tokenIndex] = lastToken;
-        allTokens[lastTokenIndex] = Member(0, "null", "null");
+        allTokens[lastTokenIndex] = Spot(0, "null");
 
         allTokens.length--;
         allTokensIndex[_tokenId] = 0;
