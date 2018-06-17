@@ -8,11 +8,11 @@ yarn add truffle
 
 ## deploy
 ```
-truffle deploy --network ropsten --reset
+truffle deploy --network rinkeby --reset
 ```
 
 ## easy interaction
 ```
-truffle exec --network ropsten tools/exec_mints.js
-truffle exec --network ropsten tools/exec_views.js
+truffle exec --network rinkeby tools/exec_mints.js
+truffle exec --network rinkeby tools/exec_views.js
 ```

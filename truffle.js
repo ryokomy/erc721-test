@@ -17,6 +17,14 @@ module.exports = {
       network_id: 3,
       gas: 6000000,
       gasPrice: 5000000000
+    },
+    rinkeby: {
+      provider: function() {
+        return new HDWalletProvider(local_config.mnemonic, "https://rinkeby.infura.io/" + local_config.infura_access_token);
+      },
+      network_id: 4,
+      gas: 6000000,
+      gasPrice: 5000000000
     }
   },
   solc: {
